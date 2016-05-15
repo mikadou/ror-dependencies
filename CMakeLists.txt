@@ -148,12 +148,14 @@ if( BUILD_OGRE )
       -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/OgreDependencies
   )
 
-  # By default the cg.dll is only installed in the build directory. Therefore manually copy it to the dependency output directory.
-  ExternalProject_Add_Step(
-    ogredeps copy_cg_dll
-	COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Build/ogredeps/bin/Release/cg.dll ${DEPENDENCIES_BIN_DIR}/cg.dll
-	DEPENDEES build
-  )
+  if( WIN32 )
+    # By default the cg.dll is only installed in the build directory. Therefore manually copy it to the dependency output directory.
+    ExternalProject_Add_Step(
+      ogredeps copy_cg_dll
+      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/Build/ogredeps/bin/Release/cg.dll ${DEPENDENCIES_BIN_DIR}/cg.dll
+      DEPENDEES build
+      )
+  endif()
 
   ExternalProject_Add(
     ogre
@@ -295,10 +297,7 @@ if( BUILD_CAELUM )
   ExternalProject_Add(
     caelum
     DEPENDS ogre
-	# TODO temporarily use alternative sources which build without Boost
-    #GIT_REPOSITORY https://github.com/RigsOfRods/ogre-caelum.git
-	GIT_REPOSITORY https://github.com/tritonas00/ogre-caelum.git
-	GIT_TAG boost-cleanups
+    GIT_REPOSITORY https://github.com/RigsOfRods/ogre-caelum.git
     UPDATE_COMMAND ""
     CMAKE_ARGS
       -DPKG_CONFIG_USE_CMAKE_PREFIX_PATH=ON
